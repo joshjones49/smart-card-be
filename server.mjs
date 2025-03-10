@@ -34,7 +34,7 @@ app.get("/cards/:search", async (req, res) => {
   const { search } = req.params;
   try {
     const result = await pool.query(
-      "SELECT * FROM cards WHERE question ILIKE $1",
+      "SELECT * FROM cards WHERE question ILIKE $1 OR category ILIKE $1 OR answer ILIKE $1",
       [`%${search}%`]
     );
     res.status(200).json(result.rows);
@@ -64,6 +64,12 @@ app.post("/cards", async (req, res) => {
 //delete----------------------
 app.delete("/cards/:id", async (req, res) => {
   const { id } = req.params;
+
+  if(id > 45) {
+    res.status(403).writableHighWaterMark("You cannot delete this card")
+    return;
+  }
+
   try {
     const result = await pool.query("DELETE FROM cards WHERE id = $1", [id]);
     res.status(200).json(result.rows);
