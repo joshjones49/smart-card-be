@@ -1,15 +1,15 @@
 import express from 'express'
 
-import { getAllCards } from './cardFunctions.mjs'
+import { getAllCards, fuzzySearch } from './cardFunctions.mjs'
 
 const router = express.Router()
 
 router.get('/', async (req, res) => {
-    try {
         await getAllCards(req, res)
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
+});
+
+router.get('/:search', async (req, res) => {
+        await fuzzySearch(req, res)
 });
 
 export default router
