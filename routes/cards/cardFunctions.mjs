@@ -1,5 +1,5 @@
 import dotenv from 'dotenv'
-import pool from '../pool.mjs';
+import pool from '../../server/pool.mjs'
 
 dotenv.config()
 
