@@ -18,7 +18,7 @@ export const createTokens = async (userInfo, req, res) => {
         {subject: 'Access', expiresIn: '30d'}
     )
 
-    await pool.query('INSERT INTO refresh_tokens (token, owner_id VALUES ($1, $2)', [
+    await pool.query('INSERT INTO refresh_tokens (token, owner_id) VALUES ($1, $2)', [
         refreshToken,
         user.id
     ])

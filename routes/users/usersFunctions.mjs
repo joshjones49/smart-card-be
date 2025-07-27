@@ -2,7 +2,7 @@ import dotenv from 'dotenv'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 
-import pool from '../server/pool.mjs'
+import pool from '../../server/pool.mjs'
 import { createTokens } from '../../authFunctions/createToken.mjs'
 
 dotenv.config()
@@ -40,9 +40,9 @@ export const loginUser = async (req, res) => {
         return res.status(422).send('Fill in all fields')
     }
 
-    const user = await pool.query('SELECT email FROM users WHERE email = $1', [email])
+    const user = await pool.query('SELECT id, email, password FROM users WHERE email = $1', [email])
 
-    if(user.length === 0) {
+    if(user.rows.length === 0) {
         return res.status(401).send('Invalid email or password')
     }
 

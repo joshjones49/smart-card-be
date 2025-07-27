@@ -5,11 +5,11 @@ import { getAllCards, fuzzySearch, createCard, deleteCard } from './cardFunction
 const router = express.Router()
 
 router.get('/', async (req, res) => {
-        await getAllCards(req, res)
+    await getAllCards(req, res)
 });
 
 router.get('/:search', async (req, res) => {
-        await fuzzySearch(req, res)
+    await fuzzySearch(req, res)
 });
 
 router.post('/', async (req, res) => {

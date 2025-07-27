@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS users CASCADE;
 
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
@@ -8,6 +8,3 @@ CREATE TABLE users (
     lastName VARCHAR(255) NOT NULL,
     access VARCHAR(255)
 );
-
-INSERT INTO users (email, password, firstName, lastName, access) VALUES
-('johndoe@email.com', '123456', 'John', 'Doe', '1');
