@@ -54,3 +54,35 @@ export const loginUser = async (req, res) => {
     // creates the access and refresh tokens, inserts refresh token into the refresh_token table of the database and returns user id, email, and token in json format
     createTokens(user, req, res)
 }
+
+export const createUserCard = async (req, res) => {
+    // get user input from the request body
+    const { question, answer, category } = req.body
+
+    if(!question || !answer || !category) {
+        return res.status(400).json({ error: error.message })
+    }
+    
+    try {
+        const result = await pool.query(
+            "INSERT INTO cards (question, answer, category) VALUES ($1, $2, $3) RETURNING *",
+            [question, answer, category]
+        );
+        res.status(201).json(result.rows[0]);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
+
+export const getUserCards = async (req, res) => {
+    const { id } = req.params
+
+    try {
+        const result = await pool.query(
+            'SELECT * FROM userCards WHERE owner_id = $1', [id]
+        )
+        res.status(200).json(result.rows[0])
+    } catch (error) {
+        res.status(500).json({ error: error.message })
+    }
+}
