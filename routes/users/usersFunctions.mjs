@@ -9,12 +9,12 @@ dotenv.config()
 
 export const registerUser = async (req, res) => {
     // grab the data from the request body
-    const { email, firstName, lastName, password, access = 1 } = req.body
+    const { name, username, password, access = 1 } = req.body
 
     // if anything is missing then reject the request
     // 422 - unproccessable entity
-    if(!email || !firstName || !lastName || !password ) {
-        return res.status(422).send('Fill out all fields')
+    if( !username || !password ) {
+        return res.status(422).send('Must fill out Username & Password fields')
     }
 
     // check to see if email exists
@@ -28,19 +28,19 @@ export const registerUser = async (req, res) => {
     const hashPassword = await bcrypt.hash(password, 15)
 
     await pool.query(
-        'INSERT INTO users (email, firstName, lastName, password, access) VALUES ($1, $2, $3, $4, $5)', [email.toLowerCase(), firstName.toLowerCase(), lastName.toLowerCase(), hashPassword, access]);
+        'INSERT INTO users (name, username, password, access) VALUES ($1, $2, $3, $4)', [name.toLowerCase(), username.toLowerCase(), hashPassword, access]);
 
     return res.status(201).send('User registered successfully')
 }
 
 export const loginUser = async (req, res) => {
-    const { email, password } = req.body
+    const { username, password } = req.body
 
-    if(!email || !password) {
-        return res.status(422).send('Fill in all fields')
+    if(!username || !password) {
+        return res.status(422).send('Must fill out Username & Password fields')
     }
 
-    const user = await pool.query('SELECT id, email, password FROM users WHERE email = $1', [email])
+    const user = await pool.query('SELECT id, username, password FROM users WHERE email = $1', [username])
 
     if(user.rows.length === 0) {
         return res.status(401).send('Invalid email or password')
