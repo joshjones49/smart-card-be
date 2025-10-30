@@ -9,7 +9,7 @@ dotenv.config()
 
 export const registerUser = async (req, res) => {
     // grab the data from the request body
-    const { name, username, password, access = 1 } = req.body
+    const { id, name, username, password, access = 1 } = req.body
 
     // if anything is missing then reject the request
     // 422 - unproccessable entity
@@ -17,18 +17,23 @@ export const registerUser = async (req, res) => {
         return res.status(422).send('Must fill out Username & Password fields')
     }
 
-    // check to see if email exists
-    const user = await pool.query('SELECT email FROM users WHERE email = $1', [email])
+    // check to see if username exists
+    const user = await pool.query('SELECT username FROM users WHERE username = $1', [username])
 
-    // check length of result, if result is not 0 then email is already in use
+    // check length of result, if result is not 0 then username is already in use
     if(user.rows.length > 0) {
-        return res.status(409).send('Email already in use') // 409 - conflict
+        return res.status(409).send('Username already in use') // 409 - conflict
     }
 
     const hashPassword = await bcrypt.hash(password, 15)
 
+    // Handle optional name - use null if not provided or convert to lowercase if provided
+    const finalName = name ? name.toLowerCase() : username;
+
     await pool.query(
-        'INSERT INTO users (name, username, password, access) VALUES ($1, $2, $3, $4)', [name.toLowerCase(), username.toLowerCase(), hashPassword, access]);
+        'INSERT INTO users (name, username, password, access) VALUES ($1, $2, $3, $4)', 
+        [finalName, username.toLowerCase(), hashPassword, access]
+    );
 
     return res.status(201).send('User registered successfully')
 }
@@ -40,18 +45,18 @@ export const loginUser = async (req, res) => {
         return res.status(422).send('Must fill out Username & Password fields')
     }
 
-    const user = await pool.query('SELECT id, username, password FROM users WHERE email = $1', [username])
+    const user = await pool.query('SELECT username, password FROM users WHERE username = $1', [username])
 
     if(user.rows.length === 0) {
-        return res.status(401).send('Invalid email or password')
+        return res.status(401).send('Invalid username or password')
     }
 
     const passwordMatch = await bcrypt.compare(password, user.rows[0].password)
 
     if(!passwordMatch) {
-        return res.status(401).send('Invalid email or password')
+        return res.status(401).send('Invalid username or password')
     }
-    // creates the access and refresh tokens, inserts refresh token into the refresh_token table of the database and returns user id, email, and token in json format
+    // creates the access and refresh tokens, inserts refresh token into the refresh_token table of the database and returns user id, username, and token in json format
     createTokens(user, req, res)
 }
 

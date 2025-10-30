@@ -25,7 +25,7 @@ export const createTokens = async (userInfo, req, res) => {
 
     return res.status(200).json({
         id: user.id,
-        email: user.email,
+        username: user.username,
         accessToken,
         refreshToken
     })

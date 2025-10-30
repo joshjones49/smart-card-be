@@ -7,7 +7,7 @@ import pool from '../server/pool.mjs'
 
 dotenv.config()
 
-// ensures user is authenticated to hit caertain routes
+// ensures user is authenticated to hit certain routes
 export const authentication = async (req, res, next) => {
     const accessToken = req.headers.authorization
 

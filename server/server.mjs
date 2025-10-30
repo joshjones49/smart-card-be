@@ -19,5 +19,5 @@ app.use('/users', usersRouter)
 
 //LISTENER====================================================
 app.listen(port, () => {
-  console.log(`SmartCard API running on`, port);
+  console.log(`SmartCard API running on:`, port);
 });
