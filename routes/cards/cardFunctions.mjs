@@ -54,3 +54,37 @@ export const deleteCard = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 }
+
+export const editCard = async (req, res) => {
+    const { id } = req.params;
+    const { question, answer, category } = req.body;
+
+    // Validate that all required fields are provided
+    if (!question || !answer || !category) {
+        return res.status(400).json({ error: "Please complete all fields" });
+    }
+
+    // Validate that ID is provided
+    if (!id) {
+        return res.status(400).json({ error: "Card ID is required" });
+    }
+
+    try {
+        // Check if the card exists first
+        const cardExists = await pool.query("SELECT id FROM cards WHERE id = $1", [id]);
+        
+        if (cardExists.rows.length === 0) {
+            return res.status(404).json({ error: "Card not found" });
+        }
+
+        // Update the card
+        const result = await pool.query(
+            "UPDATE cards SET question = $1, answer = $2, category = $3 WHERE id = $4 RETURNING *",
+            [question, answer, category, id]
+        );
+        
+        res.status(200).json(result.rows[0]);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}

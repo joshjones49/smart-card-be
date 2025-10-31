@@ -1,6 +1,6 @@
 import express from 'express'
 
-import { getAllCards, fuzzySearch, createCard, deleteCard } from './cardFunctions.mjs'
+import { getAllCards, fuzzySearch, createCard, deleteCard, editCard } from './cardFunctions.mjs'
 
 const router = express.Router()
 
@@ -18,6 +18,10 @@ router.post('/', async (req, res) => {
 
 router.delete('/delete/:id', async (req, res) => {
     await deleteCard(req, res)
+})
+
+router.put('/edit/:id', async (req, res) => {
+    await editCard(req, res)
 })
 
 export default router
