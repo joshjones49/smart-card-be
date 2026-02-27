@@ -33,10 +33,16 @@ export const createCard = async (req, res) => {
         return res.status(400).json({ error: "Please complete all fields" });
     }
 
+    let newCategory = category.toLowerCase();
+
+    if (!['javascript', 'react', 'express'].includes(newCategory)) {
+        return res.status(400).json({ error: 'Category not recognized' });
+    }
+
     try {
         const result = await pool.query(
             "INSERT INTO cards (question, answer, category) VALUES ($1, $2, $3) RETURNING *",
-            [question, answer, category]
+            [question, answer, newCategory]
         );
         res.status(201).json(result.rows[0]);
     } catch (error) {
@@ -59,14 +65,18 @@ export const editCard = async (req, res) => {
     const { id } = req.params;
     const { question, answer, category } = req.body;
 
-    // Validate that all required fields are provided
     if (!question || !answer || !category) {
         return res.status(400).json({ error: "Please complete all fields" });
     }
 
-    // Validate that ID is provided
     if (!id) {
         return res.status(400).json({ error: "Card ID is required" });
+    }
+
+    let newCategory = category.toLowerCase();
+
+    if (!['javascript', 'react', 'express'].includes(newCategory)) {
+        return res.status(400).json({ error: 'Category not recognized' });
     }
 
     try {
@@ -80,7 +90,7 @@ export const editCard = async (req, res) => {
         // Update the card
         const result = await pool.query(
             "UPDATE cards SET question = $1, answer = $2, category = $3 WHERE id = $4 RETURNING *",
-            [question, answer, category, id]
+            [question, answer, newCategory, id]
         );
         
         res.status(200).json(result.rows[0]);
