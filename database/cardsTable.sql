@@ -4,7 +4,9 @@ CREATE TABLE cards (
     id SERIAL PRIMARY KEY,
     question VARCHAR(1000) NOT NULL,
     answer VARCHAR(1000) NOT NULL,
-    category VARCHAR(255) NOT NULL
+    category VARCHAR(255) NOT NULL,
+    owner_id INTEGER,
+    FOREIGN KEY (owner_id) REFERENCES users(id)
 );
 
 INSERT INTO cards (question, answer, category) VALUES
@@ -74,7 +76,7 @@ INSERT INTO cards (question, answer, category) VALUES
 
  ('What is a Pure Component in React?', 'A pure component is a component that does not re-render when the value of the state and props are the same as the previous state and props.', 'react'),
 
-('What is Express','
+('What is Express?','
 Express.js, often simply called Express, is a lightweight and flexible Node.js web application framework that provides a robust set of features to develop web and mobile applications.','express'),
 
 ('What is Middleware in Express?', '

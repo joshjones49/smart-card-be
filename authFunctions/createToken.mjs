@@ -7,7 +7,11 @@ export const createTokens = async (userInfo, req, res) => {
 
     // create access token for user on login
     const accessToken = jwt.sign(
-        {userId: user.id},
+        {
+            userId: user.id,
+            access: user.access,
+            username: user.username
+        },
         process.env.a_token,
         {subject: 'Access', expiresIn: '2h'}
     )
@@ -25,7 +29,9 @@ export const createTokens = async (userInfo, req, res) => {
 
     return res.status(200).json({
         id: user.id,
+        name: user.name,
         username: user.username,
+        access: user.access,
         accessToken,
         refreshToken
     })

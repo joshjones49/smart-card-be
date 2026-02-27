@@ -1,6 +1,6 @@
 # SmartCard (Backend API)
 
-`smart-card-be` is the Express + PostgreSQL backend for the SmartCard frontend app. It serves flashcard data, handles card CRUD routes, and includes user/auth route scaffolding for protected user-specific cards.
+`smart-card-be` is the Express + PostgreSQL backend for the SmartCard frontend app. It serves flashcard data, handles card CRUD routes, and enforces role-based access control (guest/user/admin) with card ownership rules.
 
 ## Project Description
 
@@ -8,8 +8,8 @@ This API currently provides:
 
 - flashcard data storage in PostgreSQL
 - card endpoints for create/read/search/delete/edit operations
-- user endpoints for register/login
-- protected user-card endpoints using authentication middleware
+- user endpoints for register/login/profile
+- RBAC + ownership enforcement for protected card mutations
 
 The backend runs locally on port `8000` and is consumed by the `smart-card` frontend.
 
@@ -51,6 +51,14 @@ DB_PORT=5432
 npm install
 ```
 
+### Apply Database Migration (Required)
+
+Run the migration before starting the app so role/ownership columns exist:
+
+```bash
+psql -U postgres -d smartcard -f "database/rbac_owner_migration.sql"
+```
+
 ### Run
 
 ```bash
@@ -70,16 +78,22 @@ This starts the API using nodemon at `http://localhost:8000`.
 
 - `GET /cards` - get all cards
 - `GET /cards/:search` - search cards
-- `POST /cards` - create card
-- `DELETE /cards/delete/:id` - delete card
-- `PUT /cards/edit/:id` - edit card
+- `POST /cards` - create card (auth required)
+- `DELETE /cards/delete/:id` - delete card (owner/admin only)
+- `PUT /cards/edit/:id` - edit card (owner/admin only)
 
 ### User/Auth Routes
 
 - `POST /users/register` - register user
 - `POST /users/login` - login user
-- `POST /users/create` - create user card (protected)
-- `GET /users/cards/:id` - get user cards (protected)
+- `GET /users/me` - get logged-in user profile (protected)
+- `GET /users/me/cards` - get logged-in user's cards (protected)
+
+## RBAC Rules
+
+- `guest`: can view/search cards only
+- `user`: guest permissions + can create cards + can edit/delete only own cards
+- `admin`: full access to create/edit/delete cards
 
 ## How It Connects To `smart-card`
 
@@ -91,5 +105,5 @@ This starts the API using nodemon at `http://localhost:8000`.
 ## Current Status
 
 - Core backend for flashcards is active and connected to frontend.
-- User/auth routes exist and are partially integrated into the full product flow.
-- Project is currently set up for local development.
+- Auth/profile routes and RBAC checks are implemented.
+- Project is set up for local development (requires migration applied).
